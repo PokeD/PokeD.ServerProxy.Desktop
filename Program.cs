@@ -1,0 +1,173 @@
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+
+using PCLStorage;
+
+using PokeD.Core.Wrappers;
+
+using PokeD.Server.Windows.WrapperInstances;
+
+namespace PokeD.Server.Windows
+{
+    public static partial class Program 
+    {
+        static ServerProxy Proxy { get; set; }
+
+
+        static Program()
+        {
+            FileSystemWrapper.Instance = new FileSystemWrapperInstance();
+            NetworkTCPClientWrapper.Instance = new NetworkTCPClientWrapperInstance();
+            NetworkTCPServerWrapper.Instance = new NetworkTCPServerWrapperInstance();
+            InputWrapper.Instance = new InputWrapperInstance();
+            ThreadWrapper.Instance = new ThreadWrapperInstance();
+        }
+
+
+        public static void Main(params string[] args)
+        {
+            try { AppDomain.CurrentDomain.UnhandledException += (sender, e) => CatchErrorObject(e.ExceptionObject); }
+            catch (Exception exception)
+            {
+                // Maybe it will cause a recursive exception.
+                Proxy?.Stop();
+
+                CatchError(exception);
+            }
+            Start(args);
+        }
+
+        private static void Start(params string[] args)
+        {
+            foreach (var arg in args)
+            {
+                if (arg.StartsWith("-enableconsole"))
+                    ConsoleManager.Start();
+            }
+
+            Proxy = new ServerProxy("127.0.0.1");
+            Proxy.Start();
+
+            Update();
+        }
+
+        public static long MainThreadTime { get; private set; }
+        private static void Update()
+        {
+            var watch = Stopwatch.StartNew();
+            while (true)
+            {
+                if (ConsoleManager.InputAvailable)
+                {
+                    var input = ConsoleManager.ReadLine();
+
+                    if (input.StartsWith("/"))
+                    {
+                        ConsoleManager.Clear();
+                        ConsoleManager.WriteLine(input);
+                        ExecuteCommand(input);
+                    }
+                }
+
+                if(Proxy == null || (Proxy != null && Proxy.IsDisposing))
+                    break;
+
+                Proxy.Update();
+
+
+
+                if (watch.ElapsedMilliseconds < 10)
+                {
+                    MainThreadTime = watch.ElapsedMilliseconds;
+
+                    var time = (int) (10 - watch.ElapsedMilliseconds);
+                    if (time < 0) time = 0;
+                    Thread.Sleep(time);
+                }
+
+                watch.Reset();
+                watch.Start();
+            }
+        }
+
+
+        private static void CatchErrorObject(object exceptionObject)
+        {
+            var exception = exceptionObject as Exception ?? new NotSupportedException("Unhandled exception doesn't derive from System.Exception: " + exceptionObject);
+            CatchError(exception);
+        }
+        private static void CatchError(Exception ex)
+        {
+            var errorLog = string.Format(@"[CODE]
+PokeD.Server Crash Log v {0}
+--------------------------------------------------
+System specifications:
+Operating system: {1} [{2}]
+Core architecture: {3}
+System language: {4}
+Logical processors: {5}
+{6}
+--------------------------------------------------
+You should report this error if it is reproduceable or you could not solve it by yourself.
+Go To: http://pokemon3d.net/forum/threads/12901/ to report this crash there.
+[/CODE]",
+                Assembly.GetExecutingAssembly().GetName().Version,
+                Environment.OSVersion,
+                Type.GetType("Mono.Runtime") != null ? "Mono" : ".NET",
+                Environment.Is64BitOperatingSystem ? "64 Bit" : "32 Bit",
+                CultureInfo.CurrentCulture.EnglishName,
+                Environment.ProcessorCount,
+                BuildErrorStringRecursive(ex));
+
+            var crashFolder = FileSystemWrapper.LogFolder.CreateFolderAsync("Crash", CreationCollisionOption.OpenIfExists).Result;
+            var crashFile = crashFolder.CreateFileAsync($"{DateTime.Now:yyyy-MM-dd_HH.mm.ss}.log", CreationCollisionOption.OpenIfExists).Result;
+            using (var stream = crashFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite).Result)
+            using (var writer = new StreamWriter(stream))
+                writer.Write(errorLog);
+
+#if !DEBUG
+            Environment.Exit((int) ExitCodes.UnknownError);
+#endif
+        }
+
+        private static string BuildErrorStringRecursive(Exception ex)
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat(@"
+--------------------------------------------------
+Error information:
+Type: {0}
+Message: {1}
+HelpLink: {2}
+Source: {3}
+TargetSite : {4}
+--------------------------------------------------
+CallStack:
+{5}
+",
+                ex.GetType().FullName,
+                ex.Message,
+                string.IsNullOrWhiteSpace(ex.HelpLink) ? "Empty" : ex.HelpLink,
+                ex.Source,
+                ex.TargetSite,
+                ex.StackTrace);
+
+            if (ex.InnerException != null)
+            {
+                sb.AppendFormat(@"
+--------------------------------------------------
+InnerException:
+{0}
+",
+                    BuildErrorStringRecursive(ex.InnerException));
+            }
+
+            return sb.ToString();
+        }
+    }
+}
