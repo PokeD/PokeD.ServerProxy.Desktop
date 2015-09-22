@@ -1,11 +1,9 @@
 using System;
 using System.IO;
-
 using PCLStorage;
-
 using PokeD.Core.Wrappers;
 
-namespace PokeD.Server.Windows
+namespace PokeD.ServerProxy.Desktop
 {
     public static class LogManager
     {

@@ -1,9 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-
 using PokeD.Core.Wrappers;
 
-namespace PokeD.Server.Windows.WrapperInstances
+namespace PokeD.ServerProxy.Desktop.WrapperInstances
 {
     public class NetworkTCPServerWrapperInstance : INetworkTCPServer
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PokeD.Server.Windows
+namespace PokeD.ServerProxy.Desktop
 {
     [Flags]
     public enum ExitCodes

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-
 using PokeD.Core.Wrappers;
 
-namespace PokeD.Server.Windows.WrapperInstances
+namespace PokeD.ServerProxy.Desktop.WrapperInstances
 {
     public class ThreadWrapperInstance : IThreadWrapper
     {

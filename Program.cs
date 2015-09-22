@@ -10,13 +10,13 @@ using PCLStorage;
 
 using PokeD.Core.Wrappers;
 
-using PokeD.Server.Windows.WrapperInstances;
+using PokeD.ServerProxy.Desktop.WrapperInstances;
 
-namespace PokeD.Server.Windows
+namespace PokeD.ServerProxy.Desktop
 {
     public static partial class Program 
     {
-        static ServerProxy Proxy { get; set; }
+        static Server.ServerProxy Proxy { get; set; }
 
 
         static Program()
@@ -50,7 +50,7 @@ namespace PokeD.Server.Windows
                     ConsoleManager.Start();
             }
 
-            Proxy = new ServerProxy("127.0.0.1");
+            Proxy = new Server.ServerProxy("127.0.0.1");
             Proxy.Start();
 
             Update();

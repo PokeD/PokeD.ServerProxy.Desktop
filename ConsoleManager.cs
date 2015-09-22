@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-namespace PokeD.Server.Windows
+namespace PokeD.ServerProxy.Desktop
 {
     public static class ConsoleManager
     {
@@ -65,7 +65,7 @@ namespace PokeD.Server.Windows
                 ScreenBuffer = string.Empty;
 
                 DrawLine($"Main              thread execution time: {Program.MainThreadTime} ms",                   0);
-                DrawLine($"ClientConnections thread execution time: {ServerProxy.ClientConnectionsThreadTime} ms",  1);
+                DrawLine($"ClientConnections thread execution time: {Server.ServerProxy.ClientConnectionsThreadTime} ms",  1);
                 DrawLine($"ConsoleManager    thread execution time: {ConsoleManagerThreadTime} ms",                 2);
 
                 var currentLineCursor = 3;
