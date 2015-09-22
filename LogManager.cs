@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+
 using PCLStorage;
+
 using PokeD.Core.Wrappers;
 
 namespace PokeD.ServerProxy.Desktop

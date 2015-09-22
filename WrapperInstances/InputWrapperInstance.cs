@@ -1,6 +1,6 @@
 ﻿using PokeD.Core.Wrappers;
 
-namespace PokeD.Server.Windows.WrapperInstances
+namespace PokeD.ServerProxy.Desktop.WrapperInstances
 {
     public class InputWrapperInstance : IInputWrapper
     {

@@ -104,7 +104,7 @@ namespace PokeD.ServerProxy.Desktop
         private static void CatchError(Exception ex)
         {
             var errorLog = string.Format(@"[CODE]
-PokeD.Server Crash Log v {0}
+PokeD.ServerProxy.Desktop Crash Log v {0}
 --------------------------------------------------
 System specifications:
 Operating system: {1} [{2}]

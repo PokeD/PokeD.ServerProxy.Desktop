@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Net;
 using System.Net.Sockets;
+
 using PokeD.Core.Wrappers;
 
 namespace PokeD.ServerProxy.Desktop.WrapperInstances

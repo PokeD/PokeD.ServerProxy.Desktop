@@ -2,11 +2,12 @@
 
 using PCLStorage;
 
-namespace PokeD.Server.Windows.WrapperInstances
+namespace PokeD.ServerProxy.Desktop.WrapperInstances
 {
     public class FileSystemWrapperInstance : Core.Wrappers.IFileSystem
     {
-        public IFolder UsersFolder { get; }
+        public IFolder UsersFolder { get { throw new NotImplementedException(); } }
+
         public IFolder SettingsFolder { get; }
         public IFolder LogFolder { get; }
         
@@ -14,7 +15,6 @@ namespace PokeD.Server.Windows.WrapperInstances
         {
             var baseDirectory = FileSystem.Current.GetFolderFromPathAsync(AppDomain.CurrentDomain.BaseDirectory).Result;
 
-            UsersFolder     = baseDirectory.CreateFolderAsync("Users", CreationCollisionOption.OpenIfExists).Result;
             SettingsFolder  = baseDirectory.CreateFolderAsync("Settings", CreationCollisionOption.OpenIfExists).Result;
             LogFolder       = baseDirectory.CreateFolderAsync("Logs", CreationCollisionOption.OpenIfExists).Result;
         }
