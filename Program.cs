@@ -16,7 +16,7 @@ namespace PokeD.ServerProxy.Desktop
 {
     public static partial class Program 
     {
-        static Server.ServerProxy Proxy { get; set; }
+        static ServerProxy Proxy { get; set; }
 
 
         static Program()
@@ -50,7 +50,7 @@ namespace PokeD.ServerProxy.Desktop
                     ConsoleManager.Start();
             }
 
-            Proxy = new Server.ServerProxy("127.0.0.1");
+            Proxy = new ServerProxy("127.0.0.1");
             Proxy.Start();
 
             Update();
